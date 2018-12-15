@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Blazor.Components;
 using Microsoft.AspNetCore.Blazor.Razor;
+using Microsoft.AspNetCore.Blazor.Services;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,13 +20,15 @@ namespace CompileBlazorInBlazor
     public class CompileService
     {
         private readonly HttpClient _http;
+        private readonly IUriHelper _uriHelper;
         public List<string> CompileLog { get; set; }
         private List<MetadataReference> references { get; set; }
 
 
-        public CompileService(HttpClient http)
+        public CompileService(HttpClient http, IUriHelper uriHelper)
         {
             _http = http;
+            _uriHelper = uriHelper;
         }
 
         public async Task Init()
@@ -37,7 +40,7 @@ namespace CompileBlazorInBlazor
                 {
                     references.Add(
                         MetadataReference.CreateFromStream(
-                            await this._http.GetStreamAsync("/_framework/_bin/" + assembly.Location)));
+                            await this._http.GetStreamAsync(_uriHelper.ToAbsoluteUri("/_framework/_bin/" + assembly.Location))));
                 }
             }
         }
