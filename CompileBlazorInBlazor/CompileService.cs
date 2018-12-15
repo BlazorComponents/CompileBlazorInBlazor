@@ -40,7 +40,7 @@ namespace CompileBlazorInBlazor
                 {
                     references.Add(
                         MetadataReference.CreateFromStream(
-                            await this._http.GetStreamAsync(_uriHelper.ToAbsoluteUri("/_framework/_bin/" + assembly.Location))));
+                            await this._http.GetStreamAsync(_uriHelper.GetBaseUri()+ "/_framework/_bin/" + assembly.Location)));
                 }
             }
         }
