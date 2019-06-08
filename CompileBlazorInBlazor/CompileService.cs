@@ -59,14 +59,15 @@ namespace CompileBlazorInBlazor
             var fileSystem = new EmptyRazorProjectFileSystem();
 
             CompileLog.Add("Create engine");
-            var engine = RazorProjectEngine.Create(RazorConfiguration.Default, fileSystem, b =>
+//            Microsoft.AspNetCore.Blazor.Build.
+            var engine = RazorProjectEngine.Create(RazorConfiguration.Create(RazorLanguageVersion.Version_3_0, "Blazor", new RazorExtension[0]), fileSystem, b =>
             {
                 //BlazorExtensionInitializer.Register(b);
             });
 
 
             CompileLog.Add("Create file");
-            var file = new MemoryRazorProjectItem(code, true, "/App", "/App/App.cshtml");
+            var file = new MemoryRazorProjectItem(code, true, "/App", "/App/App.razor");
             CompileLog.Add("File process and GetCSharpDocument");
             var doc = engine.Process(file).GetCSharpDocument();
             CompileLog.Add("Get GeneratedCode");
@@ -102,7 +103,7 @@ namespace CompileBlazorInBlazor
         {
             await Init();
 
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(LanguageVersion.Latest));
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(LanguageVersion.Preview));
             foreach (var diagnostic in syntaxTree.GetDiagnostics())
             {
                 CompileLog.Add(diagnostic.ToString());
