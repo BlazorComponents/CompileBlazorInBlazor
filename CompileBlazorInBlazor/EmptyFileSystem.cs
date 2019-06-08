@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.Language;
 
+
 namespace CompileBlazorInBlazor
 {
     public class EmptyRazorProjectFileSystem : RazorProjectFileSystem
@@ -16,6 +17,11 @@ namespace CompileBlazorInBlazor
         }
 
         public override RazorProjectItem GetItem(string path)
+        {
+            return new MemoryRazorProjectItem(null, false, null, null);
+        }
+
+        public override RazorProjectItem GetItem(string path, string fileKind)
         {
             return new MemoryRazorProjectItem(null, false, null, null);
         }

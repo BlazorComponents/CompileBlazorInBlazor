@@ -6,14 +6,14 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Blazor.Components;
-using Microsoft.AspNetCore.Blazor.Razor;
+
 using Microsoft.AspNetCore.Blazor.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.CodeAnalysis.Razor;
+
 
 namespace CompileBlazorInBlazor
 {
@@ -38,9 +38,15 @@ namespace CompileBlazorInBlazor
                 references = new List<MetadataReference>();
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
+                    if (assembly.IsDynamic)
+                    {
+                        continue;
+                    }
+                    var name = assembly.GetName().Name + ".dll";
+                    Console.WriteLine(name);
                     references.Add(
                         MetadataReference.CreateFromStream(
-                            await this._http.GetStreamAsync(_uriHelper.GetBaseUri()+ "/_framework/_bin/" + assembly.Location)));
+                            await this._http.GetStreamAsync(_uriHelper.GetBaseUri()+ "/_framework/_bin/" + name)));
                 }
             }
         }
@@ -53,9 +59,9 @@ namespace CompileBlazorInBlazor
             var fileSystem = new EmptyRazorProjectFileSystem();
 
             CompileLog.Add("Create engine");
-            var engine = RazorProjectEngine.Create(BlazorExtensionInitializer.DefaultConfiguration, fileSystem, b =>
+            var engine = RazorProjectEngine.Create(RazorConfiguration.Default, fileSystem, b =>
             {
-                BlazorExtensionInitializer.Register(b);
+                //BlazorExtensionInitializer.Register(b);
             });
 
 
@@ -85,7 +91,7 @@ namespace CompileBlazorInBlazor
             if (assembly != null)
             {
                 CompileLog.Add("Search Blazor component");
-                return assembly.GetExportedTypes().FirstOrDefault(i => i.IsSubclassOf(typeof(BlazorComponent)));
+                return assembly.GetExportedTypes().FirstOrDefault(i => i.IsSubclassOf(typeof(ComponentBase)));
             }
 
             return null;
@@ -129,12 +135,30 @@ namespace CompileBlazorInBlazor
                 }
 
                 CompileLog.Add("Compilation success!");
+
+                stream.Seek(0, SeekOrigin.Begin);
+
+//                var context = new CollectibleAssemblyLoadContext();
                 Assembly assemby = AppDomain.CurrentDomain.Load(stream.ToArray());
                 return assemby;
             }
 
             return null;
         }
+
+
+//        public class CollectibleAssemblyLoadContext : AssemblyLoadContext
+//        {
+//            public CollectibleAssemblyLoadContext() : base()
+//            {
+//            }
+//
+//
+//            protected override Assembly Load(AssemblyName assemblyName)
+//            {
+//                return null;
+//            }
+//        }
 
 
         public async Task<string> CompileAndRun(string code)
