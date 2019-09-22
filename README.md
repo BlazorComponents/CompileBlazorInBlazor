@@ -7,6 +7,7 @@ This is a sample project of how to compile and execute C # and Blazor components
 https://blazorcomponents.github.io/CompileBlazorInBlazor/
 
 ## News
+- Updated to latest .Net Core 3.0 RC 1
 - Updated to latest .Net Core 3.0 Preview 5
 
 

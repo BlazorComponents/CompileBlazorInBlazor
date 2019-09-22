@@ -20,12 +20,12 @@ namespace CompileBlazorInBlazor
     public class CompileService
     {
         private readonly HttpClient _http;
-        private readonly IUriHelper _uriHelper;
+        private readonly NavigationManager _uriHelper;
         public List<string> CompileLog { get; set; }
         private List<MetadataReference> references { get; set; }
 
 
-        public CompileService(HttpClient http, IUriHelper uriHelper)
+        public CompileService(HttpClient http, NavigationManager uriHelper)
         {
             _http = http;
             _uriHelper = uriHelper;
@@ -46,7 +46,7 @@ namespace CompileBlazorInBlazor
                     Console.WriteLine(name);
                     references.Add(
                         MetadataReference.CreateFromStream(
-                            await this._http.GetStreamAsync(_uriHelper.GetBaseUri()+ "/_framework/_bin/" + name)));
+                            await this._http.GetStreamAsync(_uriHelper.BaseUri+ "/_framework/_bin/" + name)));
                 }
             }
         }
@@ -59,10 +59,37 @@ namespace CompileBlazorInBlazor
             var fileSystem = new EmptyRazorProjectFileSystem();
 
             CompileLog.Add("Create engine");
-//            Microsoft.AspNetCore.Blazor.Build.
-            var engine = RazorProjectEngine.Create(RazorConfiguration.Create(RazorLanguageVersion.Version_3_0, "Blazor", new RazorExtension[0]), fileSystem, b =>
+            //            Microsoft.AspNetCore.Blazor.Build.
+            
+                        var engine = RazorProjectEngine.Create(RazorConfiguration.Create(RazorLanguageVersion.Version_3_0, "Blazor", new RazorExtension[0]), fileSystem, b =>
             {
-                //BlazorExtensionInitializer.Register(b);
+                //                RazorExtensions.Register(b);
+
+
+//                b.SetRootNamespace(DefaultRootNamespace);
+
+                // Turn off checksums, we're testing code generation.
+//                b.Features.Add(new SuppressChecksum());
+
+//                if (LineEnding != null)
+//                {
+//                    b.Phases.Insert(0, new ForceLineEndingPhase(LineEnding));
+//                }
+
+                // Including MVC here so that we can find any issues that arise from mixed MVC + Components.
+//                Microsoft.AspNetCore.Mvc.Razor.Extensions.RazorExtensions.Register(b);
+//
+//                // Features that use Roslyn are mandatory for components
+//                Microsoft.CodeAnalysis.Razor.CompilerFeatures.Register(b);
+//
+//                b.Features.Add(new CompilationTagHelperFeature());
+//                b.Features.Add(new DefaultMetadataReferenceFeature()
+//                {
+//                    References = references,
+//                });
+
+
+
             });
 
 

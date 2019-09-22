@@ -7,9 +7,9 @@
 <div>
     <div class="form-group">
         <label for="exampleFormControlTextarea1">Blazor Code</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="10" bind="@Code"></textarea>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="10" @bind="Code"></textarea>
     </div>
-    <button type="button" class="btn btn-primary" onclick="@Run">Run</button>
+    <button type="button" class="btn btn-primary" @onclick="Run">Run</button>
     <div class="card">
         <div class="card-body">
             @Result
@@ -63,14 +63,14 @@
         }
     }
 
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
         Code = @"
 <h1>Counter</h1>
 
 <p>Current count: @currentCount</p>
 
-<button class=""btn btn-primary"" onclick=""@IncrementCount"">Click me</button>
+<button class=""btn btn-primary"" @onclick=""IncrementCount"">Click me</button>
 
 @functions {
     int currentCount = 0;
