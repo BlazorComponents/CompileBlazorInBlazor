@@ -4,7 +4,7 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:63352/",
-      "sslPort": 0
+      "sslPort": 44318
     }
   },
   "profiles": {
@@ -17,11 +17,13 @@
     },
     "CompileBlazorInBlazor": {
       "commandName": "Project",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:63364/"
+      "applicationUrl": "https://localhost:1049;http://localhost:43234/"
     }
   }
 }

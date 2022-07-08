@@ -21,18 +21,18 @@
     </div>
 </div>
 
-@functions
+@code
 {
     string CsCode { get; set; }
     string ResultText { get; set; }
     string CompileText { get; set; }
 
-    public async Task Run()
+    public void Run()
     {
         try
         {
             service.CompileLog = new List<string>();
-            ResultText = await service.CompileAndRun(CsCode);
+            ResultText = service.CompileAndRun(CsCode);
         }
         catch (Exception e)
         {
@@ -47,8 +47,10 @@
         }
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await service.Init();
+
         CsCode = @"
 using System.Text;
 

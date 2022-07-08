@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Blazor.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.CodeAnalysis;
@@ -44,15 +43,20 @@ namespace CompileBlazorInBlazor
                     }
                     var name = assembly.GetName().Name + ".dll";
                     Console.WriteLine(name);
-                    references.Add(
-                        MetadataReference.CreateFromStream(
-                            await this._http.GetStreamAsync(_uriHelper.BaseUri+ "/_framework/_bin/" + name)));
+                    try
+                    {
+                        references.Add(MetadataReference.CreateFromStream(await _http.GetStreamAsync(_uriHelper.BaseUri + "_framework/" + name)));
+                    }
+                    catch
+                    {
+                        continue;
+                    }
                 }
             }
         }
 
 
-        public async Task<Type> CompileBlazor(string code)
+        public Type CompileBlazor(string code)
         {
             CompileLog.Add("Create fileSystem");
 
@@ -61,7 +65,7 @@ namespace CompileBlazorInBlazor
             CompileLog.Add("Create engine");
             //            Microsoft.AspNetCore.Blazor.Build.
             
-                        var engine = RazorProjectEngine.Create(RazorConfiguration.Create(RazorLanguageVersion.Version_3_0, "Blazor", new RazorExtension[0]), fileSystem, b =>
+            var engine = RazorProjectEngine.Create(RazorConfiguration.Create(RazorLanguageVersion.Version_6_0, "Blazor", new RazorExtension[0]), fileSystem, b =>
             {
                 //                RazorExtensions.Register(b);
 
@@ -114,7 +118,7 @@ namespace CompileBlazorInBlazor
             CompileLog.Add(csCode);
 
             CompileLog.Add("Compile assembly");
-            var assembly = await Compile(csCode);
+            var assembly = Compile(csCode);
 
             if (assembly != null)
             {
@@ -126,10 +130,8 @@ namespace CompileBlazorInBlazor
         }
 
 
-        public async Task<Assembly> Compile(string code)
+        public Assembly Compile(string code)
         {
-            await Init();
-
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(LanguageVersion.Preview));
             foreach (var diagnostic in syntaxTree.GetDiagnostics())
             {
@@ -189,11 +191,9 @@ namespace CompileBlazorInBlazor
 //        }
 
 
-        public async Task<string> CompileAndRun(string code)
+        public string CompileAndRun(string code)
         {
-            await Init();
-
-            var assemby = await this.Compile(code);
+            var assemby = Compile(code);
             if (assemby != null)
             {
                 var type = assemby.GetExportedTypes().FirstOrDefault();

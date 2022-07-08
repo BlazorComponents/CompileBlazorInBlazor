@@ -22,18 +22,18 @@
     </div>
 </div>
 
-@functions
+@code
 {
     RenderFragment Result = null;
     string Code { get; set; }
     string CompileText { get; set; }
 
-    public async Task Run()
+    public void Run()
     {
         try
         {
             service.CompileLog = new List<string>();
-            var type = await service.CompileBlazor(Code);
+            var type = service.CompileBlazor(Code);
 
             if (type != null)
             {
@@ -63,8 +63,10 @@
         }
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await service.Init();
+
         Code = @"
 <h1>Counter</h1>
 
